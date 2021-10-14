@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>    
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyFinances.Views.ItemsPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:MyFinances.ViewModels"  
+             xmlns:model="clr-namespace:MyFinances.Core.Dtos;assembly=MyFinances.Core"              
+             x:Name="BrowseItemsPage">
+
+    <ContentPage.Resources>
+
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Dodaj" Command="{Binding AddItemCommand}" />
+    </ContentPage.ToolbarItems>
+
+
+    <RefreshView x:DataType="local:ItemsViewModel"
+                 Command="{Binding LoadItemsCommand}" 
+                 IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <Grid Padding="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button
+                            Grid.Row="0"                          
+                            WidthRequest="130"
+                            HeightRequest="35"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center"
+                            Text="Poprzednia strona"
+                            FontSize ="10"
+                            BackgroundColor="#723ec7"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=PreviousPageCommand}"
+                            IsVisible="{Binding IfPrevBtnVisible}"
+                            />
+            <Button
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            WidthRequest="130"
+                            HeightRequest="35"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="Następna strona"
+                            FontSize ="10"
+                            BackgroundColor="#723ec7"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=NextPageCommand}"
+                            IsVisible="{Binding IfNextBtnVisible}"
+                            />
+
+            <CollectionView x:Name="ItemsListView"
+                ItemsSource="{Binding Operations}"
+                SelectionMode="None"
+                Grid.Row="1"
+                Grid.ColumnSpan="2">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:DataType="model:OperationDto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackLayout Padding="10" x:DataType="model:OperationDto">
+
+                                <Label Text="{Binding Name}" 
+                            LineBreakMode="NoWrap" 
+                            Style="{DynamicResource ListItemTextStyle}" 
+                            FontSize="16" />
+
+                                <Label Text="{Binding Description}" 
+                            LineBreakMode="NoWrap"
+                            Style="{DynamicResource ListItemDetailTextStyle}"
+                            FontSize="13" />
+
+                                <Label Text="{Binding Value}" 
+                            LineBreakMode="NoWrap"
+                            Style="{DynamicResource ListItemDetailTextStyle}"
+                            FontSize="13" />
+
+                                <Label Text="{Binding Date, StringFormat='{0:dd-MM-yyyy}'}" 
+                            LineBreakMode="NoWrap"
+                            Style="{DynamicResource ListItemDetailTextStyle}"
+                            FontSize="13" />
+
+                            </StackLayout>
+
+                            <Button Grid.Column="1" 
+                                WidthRequest="70"
+                                HeightRequest="35"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Text="Usuń"
+                                FontSize ="10"
+                                BackgroundColor="OrangeRed"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=DeleteItemCommand}"
+                                CommandParameter="{Binding .}"/>
+
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                NumberOfTapsRequired="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=ItemTapped}"		
+                                CommandParameter="{Binding .}">
+                                </TapGestureRecognizer>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </RefreshView>
+</ContentPage>
